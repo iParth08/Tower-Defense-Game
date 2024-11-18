@@ -1,14 +1,39 @@
 import { ctx, canvas } from "./CanvasInit.js";
-import { Enemy, PlacementTile, Tower } from "./classes.js";
+import { Enemy, PlacementTile, Tower, Village } from "./classes.js";
 import { mapImagePath, waypoints, placementTilesData } from "./constant.js";
 // import { mapImagePath, waypoints, placementTilesData } from "./level1.js";
 
-const canvasCreate = () => {
-  //spawn enemies
-  const enemies = [];
-  const enemyColors = ["purple", "yellow", "blue", "green", "orange", "pink"];
+export const enemies = [];
+let waveCount = 2; // for tutorial [3-10]
+const enemyPerWave = 2; // leve1 wave1
+const enemyIncreaseRate = 3;
+const spawnDelay = 1000;
+let stopGame = false;
+let totalActiveEnemies = 0;
 
+const canvasCreate = () => {
+  // Initiating Village (PLAYER)
+  const village = new Village();
+
+  //Check if wave is completed
+  function checkWaveCompletion() {
+    if (totalActiveEnemies === 0 && waveCount > 0) {
+      console.log("Wave completed! Remaining waves:", waveCount); //!log
+
+      // Spawn the next wave with increased difficulty
+      spawnEnemies(enemyPerWave + enemyIncreaseRate, spawnDelay);
+    } else if (totalActiveEnemies === 0 && waveCount === 0) {
+      console.log("LEVEL COMPLETED"); //!log
+      location.reload(); // ?Reload or transition to the next level
+    }
+  }
+
+  //setting enemies //todo: task1 wave of enemies
+  const enemyColors = ["purple", "yellow", "blue", "green", "orange", "pink"];
   function spawnEnemies(spawnCount, spawnDelay) {
+    waveCount -= 1;
+    totalActiveEnemies += spawnCount;
+
     let spawnIndex = 0;
 
     const spawnInterval = setInterval(() => {
@@ -27,6 +52,11 @@ const canvasCreate = () => {
           y: waypoints[0].y,
         },
       });
+
+      enemy.onDeath = () => {
+        totalActiveEnemies -= 1;
+        checkWaveCompletion();
+      };
 
       enemies.push(enemy);
       spawnIndex++;
@@ -66,6 +96,7 @@ const canvasCreate = () => {
 
   //animation : Blood of the game
   function animation() {
+    if (stopGame) return;
     requestAnimationFrame(animation); //recursive loop
 
     //clear canvas for each frame
@@ -75,19 +106,80 @@ const canvasCreate = () => {
     ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
 
     //spawn enemies, movement of enemies
-    enemies.forEach((enemy) => enemy.update());
+    for (let i = enemies.length - 1; i >= 0; i--) {
+      const enemy = enemies[i];
+      if (enemy.health > 0) enemy.update();
+
+      //Enemies out of canvas i.e into Village
+      if (enemy.position.x > canvas.width) {
+        console.log("Enemy out of canvas, Kill a Villager"); //!log
+        // console.log(village.health); //!log
+        village.health -= enemy.attackPower;
+
+        // console.log("ORCS LEFT :", enemies.length); //!log
+        if (village.health <= 0) {
+          //! task : GAME OVER SCREEN, STOP THE GAME
+          console.warn("Village Destroyed");
+          stopGame = true;
+          return;
+        }
+        enemies.splice(i, 1);
+        enemy.die();
+      }
+    }
 
     //testing : placement tiles
     palcementTilesArray.forEach((tile) => tile.highlight(mouse));
 
     //draw towers
-    buildings.forEach((building) => building.draw());
+    buildings.forEach((building) => {
+      building.update();
+      building.targetEnemy = null; //CLEAR TARGET ENEMY ARRAY
+
+      //check for enemies in range of fire
+      const validEnemies = enemies.filter((enemy) => {
+        const dx = enemy.center.x - building.center.x;
+        const dy = enemy.center.y - building.center.y;
+        const distance = Math.hypot(dx, dy);
+
+        return distance < enemy.radius + building.rangeOfFire;
+      });
+
+      building.targetEnemy = validEnemies[0]; //SET TARGET ENEMY to 1st
+      // console.log(validEnemies); //!log
+
+      for (let i = building.projectiles.length - 1; i >= 0; i--) {
+        const projectile = building.projectiles[i];
+        projectile.update();
+
+        //collision detection with enemies
+        const dx = projectile.enemy.center.x - projectile.position.x;
+        const dy = projectile.enemy.center.y - projectile.position.y;
+        const distance = Math.hypot(dx, dy);
+
+        // here : projectile hits an enemy
+        if (distance < projectile.enemy.radius + projectile.radius) {
+          projectile.enemy.color = "red";
+          building.projectiles.splice(i, 1);
+
+          projectile.enemy.takeDamage(projectile.power);
+          if (projectile.enemy.health <= 0) {
+            //remove dead enemy
+            const enemyIndex = enemies.indexOf(projectile.enemy);
+            if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
+          }
+          // projectile.enemy.health -= projectile.power;
+
+          // console.log("Enemy hit!"); //!log
+        }
+      }
+    });
   }
 
   // Game loop : Here Begins it all
   mapImage.onload = () => {
     animation();
-    spawnEnemies(5, 1000); // Spawn 10 enemies in 2 second
+    spawnEnemies(enemyPerWave, spawnDelay); // Spawn 10 enemies in 2 second
   };
 
   //*********************** EVENT LISTENER ********************
@@ -115,7 +207,7 @@ const canvasCreate = () => {
       const building = new Tower({ position: activeTile.position });
       buildings.push(building);
       activeTile.isOccupied = true;
-      console.log("Tower Built");
+      // console.log("Tower Built"); //!log
     }
   });
 };

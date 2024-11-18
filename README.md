@@ -76,3 +76,13 @@ _Add screenshots of your game here for better visualization._
 Feel free to reach out with feedback or suggestions! 😊
 
 ---
+
+## 🕷️🐞🕸️ Issues & Bug Potentials 🕸️🐞🕸️
+
+Flicker : replace forEach with a Reverse classic for loop
+
+<!-- Add more sections as needed -->
+
+Game Const : health (enemy, village), destruction (enmy, tower), score (kill and cost), wave (count) and level (rate and health, destruction), towertype (cost, range, attack, speed, range);
+
+OutOfTheGate => villageHealth Drop, Player kill

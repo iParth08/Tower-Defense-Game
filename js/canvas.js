@@ -1,69 +1,9 @@
-import { waypoints, placementTilesData } from "./constant.js";
+import { ctx, canvas } from "./CanvasInit.js";
+import { Enemy, PlacementTile, Tower } from "./classes.js";
+import { mapImagePath, waypoints, placementTilesData } from "./constant.js";
+// import { mapImagePath, waypoints, placementTilesData } from "./level1.js";
 
 const canvasCreate = () => {
-  const canvas = document.createElement("canvas");
-  document.body.appendChild(canvas);
-
-  const ctx = canvas.getContext("2d"); //contextAPI
-  canvas.width = 1280;
-  canvas.height = 768; //pixel
-
-  console.log(ctx);
-
-  //drawing a rectangle
-  ctx.fillStyle = "white";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // OBJECTS :
-  class Enemy {
-    constructor({ color = "red", position = { x: 0, y: 0 } }) {
-      this.position = position;
-      this.width = 64;
-      this.height = 64;
-      this.color = color;
-      this.waypointIndex = 0;
-      this.speed = 1;
-      this.center = {
-        x: this.position.x + this.width / 2,
-        y: this.position.y + this.height / 2,
-      };
-    }
-
-    draw() {
-      ctx.fillStyle = this.color;
-      ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
-    }
-
-    update() {
-      this.draw();
-
-      if (this.waypointIndex >= waypoints.length) {
-        return; // No more waypoints to follow
-      }
-
-      const waypoint = waypoints[this.waypointIndex];
-      const yDistance = waypoint.y - this.center.y;
-      const xDistance = waypoint.x - this.center.x;
-
-      const angle = Math.atan2(yDistance, xDistance);
-
-      //speed and direction
-
-      this.position.x += Math.cos(angle) * this.speed;
-      this.position.y += Math.sin(angle) * this.speed;
-      this.center = {
-        x: this.position.x + this.width / 2,
-        y: this.position.y + this.height / 2,
-      };
-
-      const distance = Math.hypot(xDistance, yDistance);
-      if (distance < 5 && this.waypointIndex < waypoints.length - 1) {
-        this.waypointIndex += 1;
-        console.log(this.waypointIndex);
-      }
-    }
-  }
-
   //spawn enemies
   const enemies = [];
   const enemyColors = ["purple", "yellow", "blue", "green", "orange", "pink"];
@@ -92,22 +32,92 @@ const canvasCreate = () => {
       spawnIndex++;
     }, spawnDelay);
   }
-  //animation
-  function animation() {
-    requestAnimationFrame(animation); //recursive loop
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
-    enemies.forEach((enemy) => enemy.update());
-  }
 
   //setting a map image
   const mapImage = new Image();
-  mapImage.src = "./public/img/gameMap.png";
+  mapImage.src = mapImagePath;
 
+  //setting placement tiles
+
+  const placementTilesData2D = [];
+  const palcementTilesArray = [];
+
+  for (let i = 0; i < placementTilesData.length; i += 20) {
+    placementTilesData2D.push(placementTilesData.slice(i, i + 20));
+  }
+
+  placementTilesData2D.forEach((row, rowIndex) => {
+    row.forEach((tile, tileIndex) => {
+      if (tile === 14) {
+        const placementTile = new PlacementTile({
+          position: {
+            x: tileIndex * 64,
+            y: rowIndex * 64,
+          },
+        });
+        palcementTilesArray.push(placementTile);
+      }
+    });
+  });
+
+  //Building Tower
+  const buildings = [];
+  let activeTile = undefined;
+
+  //animation : Blood of the game
+  function animation() {
+    requestAnimationFrame(animation); //recursive loop
+
+    //clear canvas for each frame
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    //draw the map image after cleanup
+    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
+
+    //spawn enemies, movement of enemies
+    enemies.forEach((enemy) => enemy.update());
+
+    //testing : placement tiles
+    palcementTilesArray.forEach((tile) => tile.highlight(mouse));
+
+    //draw towers
+    buildings.forEach((building) => building.draw());
+  }
+
+  // Game loop : Here Begins it all
   mapImage.onload = () => {
     animation();
     spawnEnemies(5, 1000); // Spawn 10 enemies in 2 second
   };
+
+  //*********************** EVENT LISTENER ********************
+
+  const mouse = { x: undefined, y: undefined };
+  window.addEventListener("mousemove", (e) => {
+    // console.log(e.clientX, e.clientY); //!log
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+
+    //check for active placement tile
+    activeTile = null; //clear active tile
+    for (let i = 0; i < palcementTilesArray.length; i++) {
+      const tile = palcementTilesArray[i];
+      if (tile.highlight(mouse)) {
+        activeTile = tile;
+        break;
+      }
+    }
+    // console.log("active tile collision :", activeTile); //!logs
+  });
+
+  canvas.addEventListener("click", (e) => {
+    if (activeTile && !activeTile.isOccupied) {
+      const building = new Tower({ position: activeTile.position });
+      buildings.push(building);
+      activeTile.isOccupied = true;
+      console.log("Tower Built");
+    }
+  });
 };
 
 export default canvasCreate;

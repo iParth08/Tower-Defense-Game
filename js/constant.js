@@ -1,3 +1,5 @@
+export const mapImagePath = "../assets/img/gameMap.png";
+
 export const waypoints = [
   {
     x: -124.21331566744,

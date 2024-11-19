@@ -1,5 +1,5 @@
 // export const mapImagePath = "../assets/img/gameMap.png";
-export const mapImagePath = "../../assets/img/gameMap.png";
+export const mapImagePath = "./assets/img/gameMap.png";
 
 export const waypoints = [
   {

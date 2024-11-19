@@ -6,11 +6,6 @@ class Village {
     this.health = this.maxHealth;
     this.hearts = 3;
     this.coins = 30;
-    this.powerUps = {
-      shield: { active: false, duration: 0, kill: 0 },
-      dragon: { active: false, duration: 0, kill: 0 },
-      hearts: { active: true, lives: this.hearts },
-    };
   }
 }
 

@@ -4,47 +4,58 @@ import {
   gameOverScreen,
   levelCompleteScreen,
 } from "./CanvasInit.js";
-import { Enemy, PlacementTile, Tower, Village } from "./classes.js";
-import Sprite from "./classes/Sprite.js";
-import { mapImagePath, waypoints, placementTilesData } from "./constant.js";
-// import { mapImagePath, waypoints, placementTilesData } from "./level1.js";
+import {
+  Enemy,
+  PlacementTile,
+  Tower,
+  Village,
+  Sprite,
+} from "./classes/index.js";
+import {
+  mapImagePath,
+  waypoints,
+  placementTilesData,
+} from "./data/tutorial.js";
 
+let stopGame = false;
 let waveCount = 2; // for tutorial [3-10]
 const enemyPerWave = 2; // leve1 wave1
 const enemyIncreaseRate = 3;
 const spawnDelay = 1000;
-let stopGame = false;
 let totalActiveEnemies = 0;
 const explosions = [];
 
 const canvasCreate = () => {
+  //* Setting the containers
+
   // setting a village && Enemies
   const enemies = [];
   const village = new Village();
 
-  // Some variables on Village
+  // Some variables on Village //note: html update
   heartCount.innerText = village.hearts;
   coinCount.innerText = village.coins;
 
-  //Check if wave is completed
-  function checkWaveCompletion() {
-    console.log("ORCS LEFT :", totalActiveEnemies); //!log
-    console.log("Remaining waves:", waveCount); //!log
-    console.log("Enemies:", enemies); //!log
-    if (totalActiveEnemies === 0 && waveCount > 0) {
-      console.log("Wave completed! Remaining waves:", waveCount); //!log
+  //setting a map image
+  const mapImage = new Image();
+  mapImage.src = mapImagePath;
 
+  //setting placement tiles
+  const placementTilesData2D = [];
+  const palcementTilesArray = [];
+
+  //?Check if wave is completed func
+  function checkWaveCompletion() {
+    if (totalActiveEnemies === 0 && waveCount > 0) {
       // Spawn the next wave with increased difficulty
       spawnEnemies(enemyPerWave + enemyIncreaseRate, spawnDelay);
     } else if (totalActiveEnemies === 0 && waveCount === 0) {
-      console.log("LEVEL COMPLETED"); //!log
-      stopGame = true; // ?Reload or transition to the next level
+      stopGame = true; //todo: task1 -> Next Level
       levelCompleteScreen.style.display = "flex";
     }
   }
 
-  //setting enemies //todo: task1 wave of enemies
-  const enemyColors = ["purple", "yellow", "blue", "green", "orange", "pink"];
+  //?spawnEnemies func
   function spawnEnemies(spawnCount, spawnDelay) {
     waveCount -= 1;
     totalActiveEnemies += spawnCount;
@@ -53,21 +64,21 @@ const canvasCreate = () => {
 
     const spawnInterval = setInterval(() => {
       if (spawnIndex >= spawnCount) {
-        clearInterval(spawnInterval); // Stop spawning after reaching count
+        clearInterval(spawnInterval);
         return;
       }
 
-      const color = enemyColors[spawnIndex % enemyColors.length]; // Rotate through colors
       const positionOffset = spawnIndex * 150; // Offset for starting position
 
       const enemy = new Enemy({
-        color,
+        color: "red",
         position: {
           x: waypoints[0].x - positionOffset,
           y: waypoints[0].y,
         },
       });
 
+      //? Death of enemies func
       enemy.onDeath = () => {
         totalActiveEnemies -= 1;
         village.coins += enemy.drop;
@@ -84,15 +95,7 @@ const canvasCreate = () => {
     }, spawnDelay);
   }
 
-  //setting a map image
-  const mapImage = new Image();
-  mapImage.src = mapImagePath;
-
-  //setting placement tiles
-
-  const placementTilesData2D = [];
-  const palcementTilesArray = [];
-
+  //? place tiles func
   for (let i = 0; i < placementTilesData.length; i += 20) {
     placementTilesData2D.push(placementTilesData.slice(i, i + 20));
   }
@@ -115,7 +118,7 @@ const canvasCreate = () => {
   const buildings = [];
   let activeTile = undefined;
 
-  //animation : Blood of the game
+  //!animation : Blood of the game
   function animation() {
     if (stopGame) {
       //clear canvas for last time
@@ -198,7 +201,6 @@ const canvasCreate = () => {
       });
 
       building.targetEnemy = validEnemies[0]; //SET TARGET ENEMY to 1st
-      // console.log(validEnemies); //!log
 
       for (let i = building.projectiles.length - 1; i >= 0; i--) {
         const projectile = building.projectiles[i];
@@ -213,7 +215,7 @@ const canvasCreate = () => {
         if (distance < projectile.enemy.radius + projectile.radius) {
           projectile.enemy.color = "red";
 
-          //? remove projectile
+          //note: remove projectile
           explosions.push(
             new Sprite({
               position: projectile.position,
@@ -226,16 +228,13 @@ const canvasCreate = () => {
 
           projectile.enemy.health -= projectile.power;
           if (projectile.enemy.health <= 0) {
-            //remove dead enemy
+            //note:remove dead enemy
             const enemyIndex = enemies.indexOf(projectile.enemy);
             if (enemyIndex > -1) {
               projectile.enemy.die();
               enemies.splice(enemyIndex, 1);
             }
           }
-          // projectile.enemy.health -= projectile.power;
-
-          // console.log("Enemy hit!"); //!log
         }
       }
     });
@@ -269,7 +268,6 @@ const canvasCreate = () => {
         break;
       }
     }
-    // console.log("active tile collision :", activeTile); //!logs
   });
 
   //Build Tower on Click
@@ -296,7 +294,6 @@ const canvasCreate = () => {
 
       //sort buildings so that towers are on top : corrects perspective
       buildings.sort((a, b) => a.position.y - b.position.y);
-      // console.log("Tower Built"); //!log
     }
   });
 };

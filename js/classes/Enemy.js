@@ -1,5 +1,6 @@
 import { ctx } from "../CanvasInit.js";
-import { waypoints } from "../constant.js";
+
+import { waypoints } from "../data/tutorial.js";
 import Sprite from "./Sprite.js";
 
 // ENEMY
@@ -17,7 +18,6 @@ class Enemy extends Sprite {
     this.radius = 32;
     this.color = color;
     this.waypointIndex = 0;
-    this.level = 1;
     this.drop = 5; // [5-25] multiplier and Chance
     this.speed = 1; //min speed [1-4]
     this.health = 6;
@@ -34,7 +34,7 @@ class Enemy extends Sprite {
     super.draw();
     super.animateFrames();
 
-    //health bar
+    //*health bar
     ctx.fillStyle = "red";
     ctx.fillRect(this.position.x, this.position.y - 20, this.width, 10);
     ctx.fillStyle = "green";
@@ -71,7 +71,6 @@ class Enemy extends Sprite {
     const distance = Math.hypot(xDistance, yDistance);
     if (distance < 5 && this.waypointIndex < waypoints.length - 1) {
       this.waypointIndex += 1;
-      //   console.log(this.waypointIndex); //!log
     }
   }
 

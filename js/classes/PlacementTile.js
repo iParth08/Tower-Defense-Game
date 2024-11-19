@@ -1,6 +1,5 @@
 import { ctx } from "../CanvasInit.js";
 
-// PLACEMENT TILE
 class PlacementTile {
   constructor({ position = { x: 0, y: 0 } }) {
     this.position = position;
@@ -15,7 +14,7 @@ class PlacementTile {
   }
 
   highlight(mouse) {
-    this.draw(); //initial draw
+    this.draw();
 
     // collision detection
     if (
@@ -26,8 +25,8 @@ class PlacementTile {
     ) {
       this.color = "rgba(82, 191, 53, 0.4)";
       this.draw();
-      //   console.log("collision at :", mouse.x, mouse.y); //!log
-      return true; //collision happened with this tile
+
+      return true; // tile is occupied
     } else {
       this.color = "rgba(255, 255, 255, 0.1)";
     }

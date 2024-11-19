@@ -12,17 +12,14 @@ class Tower extends Sprite {
     });
     this.width = 64 * 2;
     this.height = 64;
-    this.color = "blue";
     this.center = {
       x: this.position.x + this.width / 2,
       y: this.position.y + this.height / 2,
     };
-    this.level = 1;
     this.cost = 10;
     this.projectiles = []; // active bullets
     this.rangeOfFire = 180; // min range [180-400]
     this.targetEnemy = null; //whom to kill
-    this.rateOfFire = 100; // 1/100 frames
     this.attackForce = 2;
   }
 
@@ -31,14 +28,13 @@ class Tower extends Sprite {
     if (this.targetEnemy || (!this.targetEnemy && this.frames.current != 0))
       super.animateFrames();
 
+    //fixme: where you require to test
     // this.drawRange();
   }
 
   drawRange() {
-    //range of fire //todo: fill & remove
     ctx.beginPath();
     ctx.arc(this.center.x, this.center.y, this.rangeOfFire, 0, Math.PI * 2);
-    // ctx.strokeStyle = "white";
     ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
     ctx.fill();
   }

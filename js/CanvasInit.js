@@ -16,6 +16,7 @@ canvas.height = 768; //pixel
 ctx.fillStyle = "white";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-console.log(ctx);
+//?Check if canvas is working
+// console.log(ctx);
 
 export { canvas, ctx, gameOverScreen, levelCompleteScreen };

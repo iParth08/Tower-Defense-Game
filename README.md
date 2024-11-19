@@ -55,7 +55,19 @@
 
 ## 📸 Screenshots
 
-_Add screenshots of your game here for better visualization._
+_A Game in Making..._
+
+- Level Map Creation
+  ![Game Screenshot](./assets/img/level1Map.png)
+
+- In Making Scene
+  ![Game Screenshot](./assets/banner/making1.png)
+
+- Level Pass Screen
+  ![Game Screenshot](./assets/banner/levelPass1.png)
+
+- Game Over Screen
+  ![Game Screenshot](./assets/banner/gameOver1.png)
 
 ---
 
@@ -63,11 +75,11 @@ _Add screenshots of your game here for better visualization._
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/username/tower-defense-orc-invasion.git
+   git clone https://github.com/iParth08/Tower-Defense-Game.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd tower-defense-orc-invasion
+   cd Tower-Defense-Game
    ```
 3. Open `index.html` in your browser to play.
 

@@ -8,6 +8,44 @@
   </head>
   <body>
     <!-- Injection of canvas -->
+    <div id="game-container">
+      <canvas id="map-canvas"></canvas>
+      <div class="layer" id="game-over-screen">
+        <h2>Game Over</h2>
+        <span>Your villagers cried for you and..</span>
+        <h2>DIED</h2>
+
+        <button class="action" id="replay">Play Again</button>
+        <button class="action" id="new-game">Start New Game</button>
+      </div>
+
+      <div class="layer" id="level-complete-screen">
+        <h2>So, you did it. Huh</h2>
+        <span>You will not be able to protect them again.</span>
+        <h2>DIE, You will Die.</h2>
+
+        <button class="action" id="next-level">Next Level</button>
+        <button class="action" id="save-game">Save the Progress</button>
+      </div>
+
+      <div class="infoboard">
+        <!-- <div class="player">Arjun Kappa</div> -->
+        <div class="resources">
+          <div class="coins">
+            <span id="coinCount">40</span>
+            <img src="./assets/icons/coins.gif" alt="coins" id="coinImg" />
+          </div>
+          <div class="hearts">
+            <span id="heartCount">5</span>
+            <img
+              src="./assets/icons/heart-live.gif"
+              alt="heart"
+              id="heartImg"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="./js/index.js"></script>
   </body>
 </html>

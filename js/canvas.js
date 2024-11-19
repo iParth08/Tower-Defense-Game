@@ -1,9 +1,13 @@
-import { ctx, canvas } from "./CanvasInit.js";
+import {
+  ctx,
+  canvas,
+  gameOverScreen,
+  levelCompleteScreen,
+} from "./CanvasInit.js";
 import { Enemy, PlacementTile, Tower, Village } from "./classes.js";
 import { mapImagePath, waypoints, placementTilesData } from "./constant.js";
 // import { mapImagePath, waypoints, placementTilesData } from "./level1.js";
 
-export const enemies = [];
 let waveCount = 2; // for tutorial [3-10]
 const enemyPerWave = 2; // leve1 wave1
 const enemyIncreaseRate = 3;
@@ -12,11 +16,19 @@ let stopGame = false;
 let totalActiveEnemies = 0;
 
 const canvasCreate = () => {
-  // Initiating Village (PLAYER)
+  // setting a village && Enemies
+  const enemies = [];
   const village = new Village();
+
+  // Some variables on Village
+  heartCount.innerText = village.hearts;
+  coinCount.innerText = village.coins;
 
   //Check if wave is completed
   function checkWaveCompletion() {
+    console.log("ORCS LEFT :", totalActiveEnemies); //!log
+    console.log("Remaining waves:", waveCount); //!log
+    console.log("Enemies:", enemies); //!log
     if (totalActiveEnemies === 0 && waveCount > 0) {
       console.log("Wave completed! Remaining waves:", waveCount); //!log
 
@@ -24,7 +36,8 @@ const canvasCreate = () => {
       spawnEnemies(enemyPerWave + enemyIncreaseRate, spawnDelay);
     } else if (totalActiveEnemies === 0 && waveCount === 0) {
       console.log("LEVEL COMPLETED"); //!log
-      location.reload(); // ?Reload or transition to the next level
+      stopGame = true; // ?Reload or transition to the next level
+      levelCompleteScreen.style.display = "flex";
     }
   }
 
@@ -55,6 +68,12 @@ const canvasCreate = () => {
 
       enemy.onDeath = () => {
         totalActiveEnemies -= 1;
+        village.coins += enemy.drop;
+        coinCount.innerText = village.coins;
+        coinImg.style.transform = "scale(1.2)";
+        setTimeout(() => {
+          coinImg.style.transform = "scale(1)";
+        }, 1000);
         checkWaveCompletion();
       };
 
@@ -96,7 +115,12 @@ const canvasCreate = () => {
 
   //animation : Blood of the game
   function animation() {
-    if (stopGame) return;
+    if (stopGame) {
+      //clear canvas for last time
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
+      return;
+    }
     requestAnimationFrame(animation); //recursive loop
 
     //clear canvas for each frame
@@ -119,9 +143,24 @@ const canvasCreate = () => {
         // console.log("ORCS LEFT :", enemies.length); //!log
         if (village.health <= 0) {
           //! task : GAME OVER SCREEN, STOP THE GAME
-          console.warn("Village Destroyed");
-          stopGame = true;
-          return;
+          village.hearts -= 1;
+          heartCount.innerText = village.hearts; //print hearts
+          heartImg.src = `./assets/icons/heart-broken.gif`;
+          heartImg.style.transform = "scale(2.5)";
+
+          setTimeout(() => {
+            heartImg.src = `./assets/icons/heart-live.gif`;
+            heartImg.style.transform = "scale(1)";
+          }, 1000);
+
+          console.warn("Village is getting Destroyed");
+
+          //All Security & Lives Destroyed
+          if (village.hearts === 0) {
+            stopGame = true; // ?Reload or transition to the next level
+            console.warn("GAME OVER", gameOverScreen);
+            gameOverScreen.style.display = "flex";
+          }
         }
         enemies.splice(i, 1);
         enemy.die();
@@ -162,11 +201,14 @@ const canvasCreate = () => {
           projectile.enemy.color = "red";
           building.projectiles.splice(i, 1);
 
-          projectile.enemy.takeDamage(projectile.power);
+          projectile.enemy.health -= projectile.power;
           if (projectile.enemy.health <= 0) {
             //remove dead enemy
             const enemyIndex = enemies.indexOf(projectile.enemy);
-            if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
+            if (enemyIndex > -1) {
+              projectile.enemy.die();
+              enemies.splice(enemyIndex, 1);
+            }
           }
           // projectile.enemy.health -= projectile.power;
 
@@ -185,8 +227,13 @@ const canvasCreate = () => {
   //*********************** EVENT LISTENER ********************
 
   const mouse = { x: undefined, y: undefined };
+
+  //Suggest placement for tower
   window.addEventListener("mousemove", (e) => {
     // console.log(e.clientX, e.clientY); //!log
+
+    if (stopGame) return;
+
     mouse.x = e.clientX;
     mouse.y = e.clientY;
 
@@ -202,9 +249,25 @@ const canvasCreate = () => {
     // console.log("active tile collision :", activeTile); //!logs
   });
 
-  canvas.addEventListener("click", (e) => {
+  //Build Tower on Click
+  canvas.addEventListener("click", () => {
+    if (stopGame) return;
+
     if (activeTile && !activeTile.isOccupied) {
       const building = new Tower({ position: activeTile.position });
+
+      //check for cost of tower
+      if (village.coins < building.cost) {
+        return; //not enough coins for build
+      }
+
+      village.coins -= building.cost;
+      coinCount.innerText = village.coins; //print coins
+      coinImg.style.transform = "scale(2.5)";
+      setTimeout(() => {
+        coinImg.style.transform = "scale(1)";
+      }, 1000);
+
       buildings.push(building);
       activeTile.isOccupied = true;
       // console.log("Tower Built"); //!log

@@ -1,3 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Creepster&family=Satisfy&display=swap");
+
+.changa-one-regular {
+  font-family: "Changa One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.creepster-regular {
+  font-family: "Creepster", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.satisfy-regular {
+  font-family: "Satisfy", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,4 +25,129 @@
 }
 body {
   background-color: black;
+  /* padding: 10px 120px; offset to mouseovers*/
+  font-family: "Changa One", sans-serif;
+}
+
+#game-container {
+  position: relative;
+  display: inline-block;
+}
+
+.layer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.2);
+  -webkit-text-stroke: black 1px;
+  /* display: flex; */
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.layer h2 {
+  font-family: "Creepster", system-ui;
+  text-shadow: 2px 2px 4px black;
+  color: red;
+  font-size: 4rem;
+}
+
+.layer span {
+  font-family: "Satisfy", serif;
+  -webkit-text-stroke: red 1px;
+  text-shadow: 2px 2px 4px black;
+  color: white;
+  font-size: 3rem;
+}
+
+.layer button {
+  font-family: "Changa One", sans-serif;
+  background: linear-gradient(
+    135deg,
+    #8b4513,
+    #d2b48c
+  ); /* Soil-inspired gradient */
+  border: 2px solid white;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-top: 40px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.layer button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+}
+
+.layer button:active {
+  transform: scale(0.95);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #654321, #c2a567); /* Darker soil tones */
+}
+
+.infoboard {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 60px;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: linear-gradient(
+    to left bottom,
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.2),
+    rgba(0, 0, 0, 0)
+  );
+  z-index: 1;
+}
+
+.infoboard .player {
+  font-family: "Changa One", sans-serif;
+  font-size: 2.5rem;
+  color: white;
+  -webkit-text-stroke: black 1px;
+}
+
+.infoboard .resources {
+  display: flex;
+  height: 60px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  gap: 30px;
+}
+
+.infoboard .resources div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoboard .resources span {
+  font-family: "Changa One", sans-serif;
+  font-size: 2.2rem;
+  color: white;
+  -webkit-text-stroke: black 1px;
+  display: inline-block;
+  height: 40px;
+}
+
+.infoboard .resources img {
+  height: 45px;
+  width: 45px;
+  transition: transform 1s ease; /* Smooth animation */
 }

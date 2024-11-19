@@ -1,9 +1,16 @@
 import { ctx } from "../CanvasInit.js";
 import { waypoints } from "../constant.js";
+import Sprite from "./Sprite.js";
 
 // ENEMY
-class Enemy {
+class Enemy extends Sprite {
   constructor({ color = "red", position = { x: 0, y: 0 }, onDeath = null }) {
+    super({
+      position,
+      imageSrc: "./assets/img/orc.png",
+      frames: { max: 7, hold: 10 },
+    });
+
     this.position = position;
     this.width = 64;
     this.height = 64;
@@ -12,7 +19,7 @@ class Enemy {
     this.waypointIndex = 0;
     this.level = 1;
     this.drop = 5; // [5-25] multiplier and Chance
-    this.speed = 2; //min speed [1-6]
+    this.speed = 1; //min speed [1-4]
     this.health = 6;
     this.maxHealth = 6; //min health [6-60]
     this.attackPower = 4; // [4-20]
@@ -24,10 +31,8 @@ class Enemy {
   }
 
   draw() {
-    ctx.fillStyle = this.color;
-    ctx.beginPath();
-    ctx.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2);
-    ctx.fill();
+    super.draw();
+    super.animateFrames();
 
     //health bar
     ctx.fillStyle = "red";

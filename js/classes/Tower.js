@@ -2,9 +2,14 @@ import { ctx } from "../CanvasInit.js";
 import Sprite from "./Sprite.js";
 
 //Tower : Building
-class Tower {
+class Tower extends Sprite {
   constructor({ position = { x: 0, y: 0 } }) {
-    this.position = position;
+    super({
+      position,
+      imageSrc: "./assets/img/tower.png",
+      frames: { max: 19, hold: 10 },
+      offset: { x: 0, y: -80 },
+    });
     this.width = 64 * 2;
     this.height = 64;
     this.color = "blue";
@@ -17,66 +22,62 @@ class Tower {
     this.projectiles = []; // active bullets
     this.rangeOfFire = 180; // min range [180-400]
     this.targetEnemy = null; //whom to kill
-    this.frames = 0; //frameCount for projectile shoot rate
     this.rateOfFire = 100; // 1/100 frames
     this.attackForce = 2;
   }
 
   draw() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+    super.draw();
+    if (this.targetEnemy || (!this.targetEnemy && this.frames.current != 0))
+      super.animateFrames();
 
+    // this.drawRange();
+  }
+
+  drawRange() {
     //range of fire //todo: fill & remove
     ctx.beginPath();
     ctx.arc(this.center.x, this.center.y, this.rangeOfFire, 0, Math.PI * 2);
-    ctx.strokeStyle = "white";
-    ctx.stroke();
+    // ctx.strokeStyle = "white";
+    ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
+    ctx.fill();
   }
 
   update() {
     this.draw();
 
-    if (this.frames % this.rateOfFire === 0 && this.targetEnemy)
-      this.projectiles.push(
-        new Projectile({
-          position: { x: this.center.x, y: this.center.y },
-          enemy: this.targetEnemy,
-          power: this.attackForce,
-        })
-      );
-    this.frames += 1;
+    if (
+      this.frames.current === 6 &&
+      this.targetEnemy &&
+      this.frames.elapsed % this.frames.hold === 0
+    ) {
+      this.shoot();
+    }
   }
 
-  // update() {
-  //   this.draw();
-
-  //   if (this.frames % this.rateOfFire === 0 && this.targetEnemy) {
-  //     const projectileCount = 3; // Number of projectiles to fire
-  //     const spreadAngle = 120; // Angle in degrees for spread effect
-
-  //     for (let i = 0; i < projectileCount; i++) {
-  //       const angleOffset = (i - Math.floor(projectileCount / 2)) * spreadAngle;
-
-  //       this.projectiles.push(
-  //         new Projectile({
-  //           position: { x: this.center.x, y: this.center.y },
-  //           enemy: this.targetEnemy,
-  //           power: this.attackForce,
-  //           angleOffset: angleOffset, // Optional: for spread-based behavior
-  //         })
-  //       );
-  //     }
-  //   }
-
-  //   this.frames += 1;
-  // }
+  shoot() {
+    this.projectiles.push(
+      new Projectile({
+        position: {
+          x: this.center.x - 22,
+          y: this.center.y + this.offset.y - 30,
+        },
+        enemy: this.targetEnemy,
+        power: this.attackForce,
+      })
+    );
+  }
 }
 
 // Projectiles
 class Projectile extends Sprite {
   constructor({ position = { x: 0, y: 0 }, enemy, power }) {
-    super({ position, imageSrc: "./assets/img/projectile.png" });
-    this.position = position;
+    super({
+      position,
+      imageSrc: "./assets/img/projectile.png",
+      frames: { max: 1 },
+    });
+
     this.velocity = { x: 0, y: 0 };
     this.color = "yellow";
     this.radius = 10;
@@ -85,15 +86,7 @@ class Projectile extends Sprite {
     this.power = power; //destructive power
   }
 
-  // draw() {
-  //   ctx.beginPath();
-  //   ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
-  //   ctx.fillStyle = this.color;
-  //   ctx.fill();
-  // }
-
   update() {
-    // this.draw();
     super.draw();
 
     const targetX = this.enemy.center.x - this.position.x;

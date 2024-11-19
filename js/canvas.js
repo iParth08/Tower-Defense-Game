@@ -5,6 +5,7 @@ import {
   levelCompleteScreen,
 } from "./CanvasInit.js";
 import { Enemy, PlacementTile, Tower, Village } from "./classes.js";
+import Sprite from "./classes/Sprite.js";
 import { mapImagePath, waypoints, placementTilesData } from "./constant.js";
 // import { mapImagePath, waypoints, placementTilesData } from "./level1.js";
 
@@ -14,6 +15,7 @@ const enemyIncreaseRate = 3;
 const spawnDelay = 1000;
 let stopGame = false;
 let totalActiveEnemies = 0;
+const explosions = [];
 
 const canvasCreate = () => {
   // setting a village && Enemies
@@ -167,6 +169,17 @@ const canvasCreate = () => {
       }
     }
 
+    //explosions
+    for (let i = explosions.length - 1; i >= 0; i--) {
+      const explosion = explosions[i];
+      explosion.draw();
+      explosion.animateFrames();
+      // 0 1 2 3
+      if (explosion.frames.current >= explosion.frames.max - 1) {
+        explosions.splice(i, 1);
+      }
+    }
+
     //testing : placement tiles
     palcementTilesArray.forEach((tile) => tile.highlight(mouse));
 
@@ -199,6 +212,16 @@ const canvasCreate = () => {
         // here : projectile hits an enemy
         if (distance < projectile.enemy.radius + projectile.radius) {
           projectile.enemy.color = "red";
+
+          //? remove projectile
+          explosions.push(
+            new Sprite({
+              position: projectile.position,
+              imageSrc: "./assets/img/explosion.png",
+              frames: { max: 4, hold: 5 },
+              offset: { x: 0, y: 0 },
+            })
+          );
           building.projectiles.splice(i, 1);
 
           projectile.enemy.health -= projectile.power;
@@ -270,6 +293,9 @@ const canvasCreate = () => {
 
       buildings.push(building);
       activeTile.isOccupied = true;
+
+      //sort buildings so that towers are on top : corrects perspective
+      buildings.sort((a, b) => a.position.y - b.position.y);
       // console.log("Tower Built"); //!log
     }
   });

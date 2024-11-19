@@ -5,7 +5,7 @@ class PlacementTile {
   constructor({ position = { x: 0, y: 0 } }) {
     this.position = position;
     this.size = 64;
-    this.color = "rgba(82, 191, 53, 0.2)";
+    this.color = "rgba(255, 255, 255, 0.1)";
     this.occupied = false;
   }
 
@@ -24,12 +24,12 @@ class PlacementTile {
       mouse.y > this.position.y &&
       mouse.y < this.position.y + this.size
     ) {
-      this.color = "rgba(82, 191, 53, 0.8)";
+      this.color = "rgba(82, 191, 53, 0.4)";
       this.draw();
       //   console.log("collision at :", mouse.x, mouse.y); //!log
       return true; //collision happened with this tile
     } else {
-      this.color = "rgba(82, 191, 53, 0.2)";
+      this.color = "rgba(255, 255, 255, 0.1)";
     }
   }
 }

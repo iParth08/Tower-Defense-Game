@@ -16,6 +16,8 @@
 
 ![Game Banner Placeholder](./assets/img/level1Map.png)
 
+[![Play Now](https://img.shields.io/badge/Play_Now-v1.0-00b5e2?style=for-the-badge)](https://arjunkapadia.github.io/Tower-Defense-Game/ "Play Tower Defense: Orc Invasion")
+
 **Tower Defense: Orc Invasion** is a thrilling tower defense game where you, as a mechanical engineer, defend your village from waves of orcs. Strategically place projectile-throwing towers along their path to eliminate enemies before they reach your home!
 
 ---
@@ -35,6 +37,18 @@
 - **Point System**: Earn points for every kill and use them to deploy more towers.
 - **Health System**: Your village health decreases if orcs reach the end of the path.
 - **Game Over Mechanic**: Lose the game if three orcs make it to the village.
+
+## 🚀 Beyond Tutorial 🌌
+
+_Upcoming Features_
+
+1. A Storyline.
+2. Sound Effects.
+3. More Levels other than Tutorial.
+4. LocalStorage to save game progress.
+5. Multiplayer support.
+6. Scoreboard for top players.
+7. Additional tower types and upgrades.
 
 ---
 
@@ -87,9 +101,15 @@ _A Game in Making..._
 
 Feel free to reach out with feedback or suggestions! 😊
 
+<!-- Add your own custom feedback Collector -->
+
 ---
 
 ## 🕷️🐞🕸️ Issues & Bug Potentials 🕸️🐞🕸️
+
+_These are not problems, just things I learned along the way_
+
+> These issues have already been fixed, they are just here for reference.
 
 Flicker : replace forEach with a Reverse classic for loop
 

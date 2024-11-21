@@ -16,7 +16,7 @@
 
 ![Game Banner Placeholder](./assets/img/level1Map.png)
 
-[![Play Now](https://img.shields.io/badge/Play_Now-v1.0-00b5e2?style=for-the-badge)](https://arjunkapadia.github.io/Tower-Defense-Game/ "Play Tower Defense: Orc Invasion")
+[![Play Now](https://img.shields.io/badge/Play_Now-v1.0-00b5e2?style=for-the-badge)](https://iparth08.github.io/Tower-Defense-Game/)
 
 **Tower Defense: Orc Invasion** is a thrilling tower defense game where you, as a mechanical engineer, defend your village from waves of orcs. Strategically place projectile-throwing towers along their path to eliminate enemies before they reach your home!
 
